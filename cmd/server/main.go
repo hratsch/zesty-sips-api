@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +12,18 @@ import (
 	"github.com/hratsch/zesty-sips-api/internal/db"
 	"github.com/joho/godotenv"
 )
+
+func connectToDatabase() (*sql.DB, error) {
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable",
+		dbUser, dbPassword, dbHost, dbName)
+
+	return db.Connect(dbURL)
+}
 
 func main() {
 	// Load environment variables
@@ -21,7 +35,7 @@ func main() {
 	cfg := config.New()
 
 	// Initialize database connection
-	database, err := db.Connect(cfg.DatabaseURL)
+	database, err := connectToDatabase()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
