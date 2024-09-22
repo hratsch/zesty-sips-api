@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/hratsch/zesty-sips-api/internal/api"
 	"github.com/hratsch/zesty-sips-api/internal/db"
@@ -31,9 +32,18 @@ func main() {
 	}
 
 	// Initialize database connection
-	database, err := connectToDatabase()
+	var database *sql.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		database, err = connectToDatabase()
+		if err == nil {
+			break
+		}
+		log.Printf("Failed to connect to database: %v. Retrying in 5 seconds...", err)
+		time.Sleep(5 * time.Second)
+	}
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to connect to database after multiple attempts: %v", err)
 	}
 	defer database.Close()
 
