@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"192.168.2.2:3003/hugh/zesty-sips-api/internal/models"
-	"192.168.2.2:3003/hugh/zesty-sips-api/internal/services"
-	"192.168.2.2:3003/hugh/zesty-sips-api/pkg/utils"
+	"github.com/hratsch/zesty-sips-api/internal/models"
+	"github.com/hratsch/zesty-sips-api/internal/services"
+	"github.com/hratsch/zesty-sips-api/pkg/utils"
 )
 
 type UserHandler struct {

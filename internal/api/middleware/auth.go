@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"192.168.2.2:3003/hugh/zesty-sips-api/pkg/utils"
+	"github.com/hratsch/zesty-sips-api/pkg/utils"
 )
 
 func Auth(next http.Handler) http.Handler {
