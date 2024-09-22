@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/hratsch/zesty-sips-api/internal/api"
-	"github.com/hratsch/zesty-sips-api/internal/config"
 	"github.com/hratsch/zesty-sips-api/internal/db"
 	"github.com/joho/godotenv"
 )
@@ -30,7 +29,6 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
 
 	// Initialize database connection
 	database, err := connectToDatabase()
