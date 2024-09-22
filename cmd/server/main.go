@@ -31,8 +31,6 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Initialize configuration
-	cfg := config.New()
 
 	// Initialize database connection
 	database, err := connectToDatabase()
