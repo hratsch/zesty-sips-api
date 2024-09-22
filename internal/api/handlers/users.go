@@ -64,3 +64,20 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
+
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userID").(int64)
+
+	user, err := h.UserService.GetUser(userID)
+	if err != nil {
+		if err.Error() == "user not found" {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
+}

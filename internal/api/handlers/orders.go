@@ -29,7 +29,10 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("userID").(int64)
 	order.UserID = userID
 
-	if err := h.OrderService.CreateOrder(&order); err != nil {
+	// Get promotion code from query parameters
+	promotionCode := r.URL.Query().Get("promotionCode")
+
+	if err := h.OrderService.CreateOrder(&order, promotionCode); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
