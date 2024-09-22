@@ -16,6 +16,19 @@ func NewUserService(db *sql.DB) *UserService {
 }
 
 func (s *UserService) CreateUser(user *models.User) error {
+	if err := validateEmail(user.Email); err != nil {
+		log.WithFields(log.Fields{
+			"email": user.Email,
+		}).Errorf("Invalid email: %v", err)
+		return fmt.Errorf("invalid email: %w", err)
+	}
+	if err := validatePassword(user.Password); err != nil {
+		log.WithFields(log.Fields{
+			"password": user.Password,
+		}).Errorf("Invalid password: %v", err)
+		return fmt.Errorf("invalid password: %w", err)
+	}
+
 	if err := user.HashPassword(); err != nil {
 		return err
 	}
@@ -26,10 +39,23 @@ func (s *UserService) CreateUser(user *models.User) error {
 	err := s.DB.QueryRow(query, user.Email, user.Password, user.FirstName, user.LastName, user.Phone, user.Role).
 		Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
 
-	return err
+	if err != nil {
+		log.WithFields(log.Fields{
+			"email": user.Email,
+		}).Errorf("Failed to create user: %v", err)
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
 }
 
+var userCache = make(map[string]*models.User)
+
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
+	if user, ok := userCache[email]; ok {
+		return user, nil
+	}
+
 	user := &models.User{}
 	query := `SELECT id, email, password, first_name, last_name, phone, role, created_at, updated_at 
               FROM users WHERE email = $1`
@@ -46,6 +72,7 @@ func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 
+	userCache[email] = user
 	return user, nil
 }
 

@@ -29,6 +29,11 @@ func Auth(next http.Handler) http.Handler {
 			return
 		}
 
+		if !isValidToken(token) {
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			userID := int64(claims["user_id"].(float64))
 			ctx := context.WithValue(r.Context(), "userID", userID)
